@@ -6,6 +6,10 @@
 #include <queue>
 using namespace std;
 
+#define NAO_PROCESSADO 0
+#define EM_PROCESSO 1
+#define PROCESSADO 2
+
 class Heroi {
 	public:
     Heroi(int id, vector<Heroi> afins, vector<Heroi> conflitos);
@@ -27,12 +31,12 @@ Heroi::Heroi(int id, vector<Heroi> afins, vector<Heroi> conflitos)
 Conjunto::Conjunto(set<Heroi> conj)
 	:conj{conj} {}
 
-int BuscaLargura(int* herois_estado, int h, int** adjacencia, int num_herois) {
+int BuscaLargura(int* herois_estado, int h, int** adjacencia, int num_herois, set<int> conj) {
 
 	queue<int> fila;
 	printf("ini: %d ", h);
 	fila.push(h);
-	herois_estado[h] = 1;
+	herois_estado[h] = EM_PROCESSO;
 	int triangulos = 0;
 
 	while (fila.size() != 0) {
@@ -40,44 +44,46 @@ int BuscaLargura(int* herois_estado, int h, int** adjacencia, int num_herois) {
 		fila.pop();
 		
 		for (int i = 1; i <= num_herois; i++) {
+			auto pos = conj.find(i);
+			if (pos != conj.end())
+				if (adjacencia[aux][i] == 1) {
 
-			if (adjacencia[aux][i] == 1) {
-
-				if (herois_estado[i] == 1 ) {
-					printf("esta fora: %d-%d\n", aux, i);
-					triangulos++;
-					//printf("%d\n", *triangulos);
-				} else
-					if (herois_estado[i] == 0) {
-						
-						printf("esta dentro: %d-%d\n", aux, i);
-						fila.push(i);
-						herois_estado[i] = 1;
-						//herois_estado[aux] = 1;
-					}
-				
-			}
+					if (herois_estado[i] == EM_PROCESSO ) {
+						printf("esta fora: %d-%d\n", aux, i);
+						triangulos++;
+						//printf("%d\n", *triangulos);
+					} else
+						if (herois_estado[i] == NAO_PROCESSADO) {
+							
+							printf("esta dentro: %d-%d\n", aux, i);
+							fila.push(i);
+							herois_estado[i] = EM_PROCESSO;
+						}
+					
+				}
 			
 		}
-		herois_estado[aux] = 2;
+		herois_estado[aux] = PROCESSADO;
 
 	}
 	return triangulos;
 }
 
-int BuscaEnvelope(int num_herois, int** adjacencia) {
+int BuscaEnvelope(int num_herois, int** adjacencia, set<int> conj) {
 
 	int triangulos = 0;
 
 	int herois_estado[num_herois+1];
 
 	for (int i = 1; i < num_herois+1; i++)
-		herois_estado[i] = 0;
+		herois_estado[i] = NAO_PROCESSADO;
 
-	for (int i = 1; i < num_herois+1; i++)
-		if (herois_estado[i] == 0)
-			triangulos = triangulos + BuscaLargura(herois_estado, i, adjacencia, num_herois);
-	
+	for (int i = 1; i < num_herois+1; i++) {
+		auto pos = conj.find(i);
+		if (pos != conj.end())
+			if (herois_estado[i] == NAO_PROCESSADO)
+				triangulos = triangulos + BuscaLargura(herois_estado, i, adjacencia, num_herois, conj);
+	}
 	return triangulos;
 }
 
@@ -90,7 +96,7 @@ int main() {
 
 	int **adjacencia;
 	adjacencia = new int *[num_herois];
-	for (int i = 0; i < 10; i++)
+	for (int i = 0; i <= num_herois; i++)
    		adjacencia[i] = new int[num_herois];
 
 	for (int i = 1; i <= num_herois; i++) {
@@ -123,43 +129,14 @@ int main() {
 		printf("\n");
 	}
 
-	int t = BuscaEnvelope(num_herois, adjacencia);
+	set<int> conj;
+	conj.insert(2);
+	conj.insert(4);
+	conj.insert(5);
+	
+	int t = BuscaEnvelope(num_herois, adjacencia, conj);
 	printf("resultado: %d\n", t);
 
-	/*vector<Heroi> herois;
-
-	for (int i = 0; i < num_herois; i++) {
-		vector<Heroi> afins;
-		vector<Heroi> conflitos;
-		Heroi h(i+1, afins, conflitos);
-		herois.push_back(h);
-	}
-
-	int h1, h2;
-
-	for (int i = 0; i < num_pares; i++) {
-		fscanf(stdin, "%d", &h1);
-    	fscanf(stdin, "%d", &h2);
-		herois.at(h1-1).afins.push_back(herois.at(h2-1));
-		herois.at(h2-1).afins.push_back(herois.at(h1-1));
-	}
-
-	for (int i = 0; i < num_conflitos; i++) {
-		fscanf(stdin, "%d", &h1);
-    	fscanf(stdin, "%d", &h2);
-		herois.at(h1-1).conflitos.push_back(herois.at(h2-1));
-		herois.at(h2-1).conflitos.push_back(herois.at(h1-1));
-	}
-
-
-	printf("%d\n", herois.at(0).afins.at(0).id);
-	printf("%d\n", herois.at(1).afins.at(0).id);
-	printf("%d\n", herois.at(2).afins.at(0).id);
-	printf("%d\n", herois.at(3).afins.at(0).id);
-	printf("%d\n", herois.at(0).conflitos.at(0).id);
-	printf("%d\n", herois.at(1).conflitos.at(0).id);
-	printf("%d\n", herois.at(2).conflitos.at(0).id);
-	printf("%d\n", herois.at(3).conflitos.at(0).id);*/
 
 
 	return 0;
