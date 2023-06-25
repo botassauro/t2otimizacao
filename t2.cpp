@@ -27,13 +27,13 @@ Heroi::Heroi(int id, vector<Heroi> afins, vector<Heroi> conflitos)
 Conjunto::Conjunto(set<Heroi> conj)
 	:conj{conj} {}
 
-void BuscaLargura(int* herois_estado, int h, int** adjacencia, int num_herois, int triangulos) {
+int BuscaLargura(int* herois_estado, int h, int** adjacencia, int num_herois) {
 
 	queue<int> fila;
 	printf("ini: %d ", h);
 	fila.push(h);
 	herois_estado[h] = 1;
-	
+	int triangulos = 0;
 
 	while (fila.size() != 0) {
 		int aux = fila.front();
@@ -62,6 +62,7 @@ void BuscaLargura(int* herois_estado, int h, int** adjacencia, int num_herois, i
 		herois_estado[aux] = 2;
 
 	}
+	return triangulos;
 }
 
 int BuscaEnvelope(int num_herois, int** adjacencia) {
@@ -75,7 +76,7 @@ int BuscaEnvelope(int num_herois, int** adjacencia) {
 
 	for (int i = 1; i < num_herois+1; i++)
 		if (herois_estado[i] == 0)
-			BuscaLargura(herois_estado, i, adjacencia, num_herois, triangulos);
+			triangulos = triangulos + BuscaLargura(herois_estado, i, adjacencia, num_herois);
 	
 	return triangulos;
 }
