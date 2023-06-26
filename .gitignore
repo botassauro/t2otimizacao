@@ -1,0 +1,6 @@
+obj/*
+test/obj/*
+vg_core*
+test/vg_core*
+bb
+test/test_executable
