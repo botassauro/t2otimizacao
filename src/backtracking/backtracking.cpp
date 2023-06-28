@@ -69,7 +69,7 @@ int backtracking_only_optimality_pruning(std::vector<int> g, std::vector<std::ve
     return oo;
   }
 
-  conflicts.erase(conflicts.begin()+n+1);
+  //conflicts.erase(conflicts.begin()+n-1);
   g[n] = 1;
   int conflicts_aux = conflicts_choosen + conflictsInserted(g, conflicts[n], n);
   int try_group_0 = backtracking_only_optimality_pruning(g, affinities, conflicts, n-1, opt, conflicts_aux);

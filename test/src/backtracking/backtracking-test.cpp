@@ -33,9 +33,9 @@ TEST_CASE("backtracking") {
     CHECK(min == 4);
   } 
 
-  // SUBCASE("Optimality Pruning") {
-  //   int opt = 112345;
-  //   int min = backtracking_only_optimality_pruning(g, affinities, conflicts, 7, opt, 0);
-  //   CHECK(min == 4);
-  // }
+  SUBCASE("Optimality Pruning") {
+    int opt = 112345;
+    int min = backtracking_only_optimality_pruning(g, affinities, conflicts, 7, opt, 0);
+    CHECK(min == 4);
+  }
 }
