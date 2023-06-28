@@ -3,8 +3,17 @@
 
 #include <vector>
 
-int backtracking_no_pruning(std::vector<int>& g, std::vector<std::vector<int>> affinities, std::vector<std::vector<int>> conflicts, int n, std::vector<int>& s);
+struct Problem {
+  int opt;
+  int number_of_heroes;
+  int conflicts_cnt;
+  std::vector<int> g;
+  std::vector<std::vector<int>> affinities;
+  std::vector<std::vector<int>> conflicts;
+};
 
-int backtracking_only_optimality_pruning(std::vector<int> g, std::vector<std::vector<int>> affinities, std::vector<std::vector<int>> conflicts, int n, int& opt, int conflicts_choosen);
+int backtrackNoPruning(Problem P, int h);
+int backtrackOptimalityPruning(Problem P, int h, int& opt);
 
+int backtrackingViabilityPruning(std::vector<int> g, std::vector<std::vector<int>> affinities, std::vector<std::vector<int>> conflicts, int h);
 #endif

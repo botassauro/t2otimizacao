@@ -5,29 +5,33 @@
 
 #define oo 112345
 
-bool isViable(std::vector<int> g, std::vector<std::vector<int>> affinities) {
+bool noGroupIsEmpty(int zeros, int ones) {
+  return zeros == 0 && ones > 0;
+}
+
+bool isViable(Problem& P) {
   return true;
-  int all_zeros = 0;
-  int all_ones = 0;
+  int zeros = 0;
+  int ones = P.number_of_heroes;
 
-  for ( size_t h = 1; h < g.size(); h++ ) {
-    all_zeros +=  g[h];
-    all_ones +=  g[h];
+  for ( int h = 1; h <= P.number_of_heroes; h++ ) {
+    zeros +=  P.g[h];
+    ones -=  P.g[h];
 
-    for ( int u : affinities[h] ) {
-      if ( g[h] != g[u] ) 
+    for ( int u : P.affinities[h] ) {
+      if ( P.g[h] != P.g[u] ) 
         return false;
     }
   }
 
-  return (all_zeros != 0) && (all_ones != (int)(g.size() - 1));
+  return noGroupIsEmpty(zeros, ones);
 }
 
-int conflictsInserted(std::vector<int> g, std::vector<int> conflicts, int h) {
+int conflictsInserted(Problem P, int h) {
   int cnt = 0;
 
-  for ( int u : conflicts ) {
-    if ( g[h] == g[u] ) { 
+  for ( int u : P.conflicts[h] ) {
+    if ( P.g[h] == P.g[u] ) { 
       cnt++;
     }
   }
@@ -35,24 +39,20 @@ int conflictsInserted(std::vector<int> g, std::vector<int> conflicts, int h) {
   return cnt;
 }
 
-int backtracking_no_pruning(std::vector<int>& g, std::vector<std::vector<int>> affinities, std::vector<std::vector<int>> conflicts, int n, std::vector<int>& s) {
-  if ( n == 0 ) {
-    return isViable(g, affinities) ? 0 : oo;
+int backtrackNoPruning(Problem P, int h) {
+  if ( h == 0 ) {
+    return isViable(P) ? 0 : oo;
   }
-  
-  g[n] = 1;
-  int try_group_0 = backtracking_no_pruning(g, affinities, conflicts, n-1, s) + conflictsInserted(g, conflicts[n], n);
 
-  g[n] = 0;
-  int try_group_1 = backtracking_no_pruning(g, affinities, conflicts, n-1, s) + conflictsInserted(g, conflicts[n], n);
+  int min = oo;
 
-  if ( std::min(try_group_0, try_group_1) == try_group_0 ) { 
-    s[n] = 1;
+  for (int i = 0; i <= 1; i++ ) {
+    P.g[h] = i;
+    int min_group = backtrackNoPruning(P, h-1) + conflictsInserted(P, h);
+    min = std::min(min, min_group);
   }
-  else {
-    s[n] = 0;
-  }
-  return std::min(try_group_0, try_group_1);
+
+  return min;
 }
 
 std::vector<std::vector<int>> removeConflicts(std::vector<std::vector<int>> conflicts, int h) {
@@ -66,36 +66,64 @@ std::vector<std::vector<int>> removeConflicts(std::vector<std::vector<int>> conf
   return conflicts;
 }
 
-int backtracking_only_optimality_pruning(std::vector<int> g, std::vector<std::vector<int>> affinities, std::vector<std::vector<int>> conflicts, int n, int& opt, int conflicts_amount) {
-  if ( n == 0 ) {
-    return isViable(g, affinities) ? 0 : oo;
+int backtrackOptimalityPruning(Problem P, int h, int& opt) {
+  if ( h == 0 ) {
+    return isViable(P) ? 0 : oo;
   }
   
-  if ( limitingFunction(conflicts, conflicts_amount) >= opt ) {
+  if ( limitingFunction(P.conflicts, P.conflicts_cnt) >= P.opt ) {
     return oo;
   }
 
-  g[n] = 1;
-  int conflicts_aux = conflicts_amount + conflictsInserted(g, conflicts[n], n);
-  std::vector<std::vector<int>> conflicts_not_choosed = removeConflicts(conflicts, n);
-  int try_group_0 = backtracking_only_optimality_pruning(g, affinities, conflicts_not_choosed, n-1, opt, conflicts_aux) + conflictsInserted(g, conflicts[n], n);
+  std::vector<std::vector<int>> original_conflicts = P.conflicts;
 
-  g[n] = 0;
-  conflicts_aux = conflicts_amount + conflictsInserted(g, conflicts[n], n);
-  conflicts_not_choosed = removeConflicts(conflicts, n);
-  int try_group_1 = backtracking_only_optimality_pruning(g, affinities, conflicts_not_choosed, n-1, opt, conflicts_aux) + conflictsInserted(g, conflicts[n], n);
+  int min = oo;
 
-  if ( try_group_0 < try_group_1 ) {
-    if ( try_group_0 > opt ) {
-      opt = try_group_0;
-    }
-    g[n] = 1;
-    return try_group_0;
+  for ( int i = 0; i <= 1; i++ ) {
+    P.g[h] = i;
+    int conflicts_inserted = conflictsInserted(P, h);
+    P.conflicts_cnt += conflicts_inserted;
+    P.conflicts = removeConflicts(P.conflicts, h);
+    int min_group = backtrackOptimalityPruning(P, h-1, opt) + conflicts_inserted;
+
+    min = std::min(min, min_group);
+
+    P.conflicts_cnt -= conflicts_inserted;
+    P.conflicts = original_conflicts;
   }
 
-  if ( try_group_1 > opt ) {
-    opt = try_group_1;
-  }
-  
-  return try_group_1;
+  opt = std::min(opt, min);
+
+  return min;
 }
+
+// bool wouldBeViable(std::vector<int> g, std::vector<std::vector<int>> affinities, int h, int h_group) {
+//   for ( int u : affinities[h] ) {
+//     if ( h_group != g[u] ) {
+//       return false;
+//     }
+//   }
+
+//   return true;
+// }
+//   
+// int backtrackingViabilityPruning(std::vector<int> g, std::vector<std::vector<int>> affinities, std::vector<std::vector<int>> conflicts, int h) {
+//   if ( h == 0 ) {
+//     return isViable(g, affinities) ? 0 : oo;
+//   }
+//   
+//   int group0 = oo;
+//   int group1 = oo;
+
+//   if ( wouldBeViable(g, affinities, h, 1) ) {
+//     g[h] = 1;
+//     group0 = backtrackingViabilityPruning(g, affinities, conflicts, h-1) + conflictsInserted(g, conflicts[n], n);
+//   }
+
+//   if ( wouldBeViable(g, affinities, h, 0) ) {
+//     g[h] = 0;
+//     group1 = backtrackingViabilityPruning(g, affinities, conflicts, h-1) + conflictsInserted(g, conflicts[n], n);
+//   }
+
+//   return std::min(group0, group1);
+// }

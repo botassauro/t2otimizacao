@@ -28,25 +28,26 @@ TEST_CASE("Backtracking") {
   };
 
   std::vector<int> g(8);
-  std::vector<int> s(8);
+
+  Problem P { 
+    .opt = 112345,
+    .number_of_heroes = 7,
+    .conflicts_cnt = 0,
+    .g = g,
+    .affinities = affinities, 
+    .conflicts = conflicts,
+  };
 
   SUBCASE("No pruning") {
     std::cout << " [No pruning]";
-    int min = backtracking_no_pruning(g, affinities, conflicts, 7, s);
+    int min = backtrackNoPruning(P, 7);
     CHECK(min == 4);
-    // print group
-    // for ( int h = 1; h < s.size(); h++ ) {
-    //   if ( s[h] == 1 ) {
-    //     std::cout << h << " ";
-    //   }
-    // }
-    // std::cout << "\n";
   } 
 
   SUBCASE("Optimality Pruning") {
     std::cout << " [Optimality pruning]";
     int opt = 112345;
-    int min = backtracking_only_optimality_pruning(g, affinities, conflicts, 7, opt, 0);
+    int min = backtrackOptimalityPruning(P, 7, opt);
     CHECK(min == 4);
   }
 

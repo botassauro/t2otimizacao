@@ -3,8 +3,7 @@
 #include <vector>
 using namespace std;
 
-
-bool is_group_valid(int** matriz_afins, vector<int> group, int n, int num_afinidades[]) {
+bool isGroupValid(int** matriz_afins, vector<int> group, int n, int num_afinidades[]) {
 
     // ex: 010101
     int sum = 0;
