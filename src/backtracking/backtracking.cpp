@@ -55,23 +55,35 @@ int backtracking_no_pruning(std::vector<int>& g, std::vector<std::vector<int>> a
   return std::min(try_group_0, try_group_1);
 }
 
-int backtracking_only_optimality_pruning(std::vector<int> g, std::vector<std::vector<int>> affinities, std::vector<std::vector<int>> conflicts, int n, int& opt, int conflicts_choosen) {
+std::vector<std::vector<int>> removeConflicts(std::vector<std::vector<int>> conflicts, int h) {
+  for ( int u : conflicts[h] ) {
+    if ( u > h ) {
+      conflicts[h].erase(conflicts[h].begin() + u);             
+      conflicts[u].erase(conflicts[u].begin() + h);             
+    }
+  }
+
+  return conflicts;
+}
+
+int backtracking_only_optimality_pruning(std::vector<int> g, std::vector<std::vector<int>> affinities, std::vector<std::vector<int>> conflicts, int n, int& opt, int conflicts_amount) {
   if ( n == 0 ) {
     return isViable(g, affinities) ? 0 : oo;
   }
   
-  if ( limitingFunction(conflicts, conflicts_choosen) >= opt ) {
+  if ( limitingFunction(conflicts, conflicts_amount) >= opt ) {
     return oo;
   }
 
-  //conflicts.erase(conflicts.begin()+n-1);
   g[n] = 1;
-  int conflicts_aux = conflicts_choosen + conflictsInserted(g, conflicts[n], n);
-  int try_group_0 = backtracking_only_optimality_pruning(g, affinities, conflicts, n-1, opt, conflicts_aux) + conflictsInserted(g, conflicts[n], n);
+  int conflicts_aux = conflicts_amount + conflictsInserted(g, conflicts[n], n);
+  std::vector<std::vector<int>> conflicts_not_choosed = removeConflicts(conflicts, n);
+  int try_group_0 = backtracking_only_optimality_pruning(g, affinities, conflicts_not_choosed, n-1, opt, conflicts_aux) + conflictsInserted(g, conflicts[n], n);
 
   g[n] = 0;
-  conflicts_aux = conflicts_choosen + conflictsInserted(g, conflicts[n], n);
-  int try_group_1 = backtracking_only_optimality_pruning(g, affinities, conflicts, n-1, opt, conflicts_aux) + conflictsInserted(g, conflicts[n], n);
+  conflicts_aux = conflicts_amount + conflictsInserted(g, conflicts[n], n);
+  conflicts_not_choosed = removeConflicts(conflicts, n);
+  int try_group_1 = backtracking_only_optimality_pruning(g, affinities, conflicts_not_choosed, n-1, opt, conflicts_aux) + conflictsInserted(g, conflicts[n], n);
 
   if ( try_group_0 < try_group_1 ) {
     if ( try_group_0 > opt ) {
