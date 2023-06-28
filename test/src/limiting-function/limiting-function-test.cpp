@@ -1,6 +1,6 @@
 #include <iostream>
 #include "doctest.h"
-#include "bb.h"
+#include "limiting-function.h"
 
 TEST_CASE("Count all even cycles") {
   std::cout << "Running: Count all even cycles:";

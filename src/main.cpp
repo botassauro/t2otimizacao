@@ -1,7 +1,7 @@
 #include <vector>
 #include <iostream>
 
-#include "bb.h"
+#include "limiting-function.h"
 
 int main() {
   std::vector<std::vector<int>> g(4);

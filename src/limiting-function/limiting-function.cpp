@@ -1,7 +1,7 @@
 #include <queue>
 #include <algorithm>
 #include <unordered_set>
-#include "bb.h"
+#include "limiting-function.h"
 
 #define COUNTED 1
 
@@ -200,3 +200,9 @@ int CountCycles::countTriangles() {
 CountCycles::CountCycles(std::vector<std::vector<int>> g) 
   : g(g), ancestor(g.size()+1), state(g.size()+1), distance(g.size()+1), edges_counted(g.size()+1, std::vector<int>(g.size()+1)) {
 }
+
+int limitingFunction(std::vector<std::vector<int>> conflicts, int conflicts_choosen) {
+  CountCycles cc(conflicts);
+  return cc.countEvenCycles() + conflicts_choosen;
+}
+
