@@ -1,4 +1,5 @@
 #include <vector>
+#include <iostream>
 #include "limiting-function.h"
 #include "backtracking.h"
 
@@ -9,11 +10,11 @@ bool isViable(std::vector<int> g, std::vector<std::vector<int>> affinities) {
   int all_zeros = 0;
   int all_ones = 0;
 
-  for ( size_t h = 1; h <= g.size(); h++ ) {
+  for ( size_t h = 1; h < g.size(); h++ ) {
     all_zeros +=  g[h];
     all_ones +=  g[h];
 
-    for ( size_t u = 1; u <= affinities[h].size(); u++ ) {
+    for ( int u : affinities[h] ) {
       if ( g[h] != g[u] ) 
         return false;
     }
@@ -25,39 +26,47 @@ bool isViable(std::vector<int> g, std::vector<std::vector<int>> affinities) {
 int countConflicts(std::vector<int> g, std::vector<std::vector<int>> conflicts) {
   int cnt = 0;
 
-  for ( size_t h = 1; h <= conflicts.size(); h++ ) {
-    for ( size_t u = 1; u <= conflicts[h].size(); u++ ) {
-      if ( g[h] == g[u] )
+  for ( size_t h = 1; h < g.size(); h++ ) {
+    for ( int u : conflicts[h] ) {
+      if ( g[h] == g[u] ) {
         cnt++;
+      }
+    }
+  }
+  
+  return cnt;
+}
+
+int conflictsInserted(std::vector<int> g, std::vector<int> conflicts, int h) {
+  int cnt = 0;
+
+  for ( int u : conflicts ) {
+    if ( g[h] == g[u] ) { 
+      cnt++;
     }
   }
 
   return cnt;
 }
 
-int backtracking_no_pruning(std::vector<int> g, std::vector<std::vector<int>> affinities, std::vector<std::vector<int>> conflicts, int n) {
+int backtracking_no_pruning(std::vector<int>& g, std::vector<std::vector<int>> affinities, std::vector<std::vector<int>> conflicts, int n, std::vector<int>& s) {
   if ( n == 0 ) {
-    return isViable(g, affinities) ? countConflicts(g, conflicts) : oo;
+    return isViable(g, affinities) ? 0 : oo;
   }
   
   g[n] = 1;
-  int try_group_0 = backtracking_no_pruning(g, affinities, conflicts, n-1);
+  int try_group_0 = backtracking_no_pruning(g, affinities, conflicts, n-1, s) + conflictsInserted(g, conflicts[n], n);
 
   g[n] = 0;
-  int try_group_1 = backtracking_no_pruning(g, affinities, conflicts, n-1);
+  int try_group_1 = backtracking_no_pruning(g, affinities, conflicts, n-1, s) + conflictsInserted(g, conflicts[n], n);
 
-  return std::min(try_group_0, try_group_1);
-}
-
-int conflictsInserted(std::vector<int> g, std::vector<int> conflicts, int h) {
-  int cnt = 0;
-
-  for ( int u = 1; u <= conflicts[h]; u++ ) {
-    if ( g[h] == g[u] ) 
-      cnt++;
+  if ( std::min(try_group_0, try_group_1) == try_group_0 ) { 
+    s[n] = 1;
   }
-
-  return cnt;
+  else {
+    s[n] = 0;
+  }
+  return std::min(try_group_0, try_group_1);
 }
 
 int backtracking_only_optimality_pruning(std::vector<int> g, std::vector<std::vector<int>> affinities, std::vector<std::vector<int>> conflicts, int n, int& opt, int conflicts_choosen) {

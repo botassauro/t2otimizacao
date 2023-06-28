@@ -1,9 +1,10 @@
 #include <vector>
+#include <iostream>
 #include "doctest.h"
 #include "backtracking.h"
 
-TEST_CASE("backtracking") {
- 
+TEST_CASE("Backtracking") {
+  std::cout << "Running: Backtracking:"; 
   std::vector<std::vector<int>> affinities = {
     {0},
     {4, 5},
@@ -19,23 +20,35 @@ TEST_CASE("backtracking") {
     {0},
     {2, 3},
     {1, 3},
-    {4},
-    {5},
-    {6, 7},
+    {1, 2, 4},
+    {3, 5},
+    {4, 6, 7},
     {5, 7},
     {5, 6},
   };
 
-  std::vector<int> g(7);
+  std::vector<int> g(8);
+  std::vector<int> s(8);
 
   SUBCASE("No pruning") {
-    int min = backtracking_no_pruning(g, affinities, conflicts, 7);
+    std::cout << " [No pruning]";
+    int min = backtracking_no_pruning(g, affinities, conflicts, 7, s);
     CHECK(min == 4);
+    // print group
+    // for ( int h = 1; h < s.size(); h++ ) {
+    //   if ( s[h] == 1 ) {
+    //     std::cout << h << " ";
+    //   }
+    // }
+    // std::cout << "\n";
   } 
 
   SUBCASE("Optimality Pruning") {
+    std::cout << " [Optimality pruning]";
     int opt = 112345;
     int min = backtracking_only_optimality_pruning(g, affinities, conflicts, 7, opt, 0);
     CHECK(min == 4);
   }
+
+  std::cout << "\n";
 }
