@@ -27,7 +27,7 @@ TEST_CASE("Backtracking") {
     {5, 6},
   };
 
-  std::vector<int> g(8);
+  std::vector<int> g(8, -1);
 
   Problem P { 
     .opt = 112345,
@@ -40,16 +40,22 @@ TEST_CASE("Backtracking") {
 
   SUBCASE("No pruning") {
     std::cout << " [No pruning]";
-    int min = backtrackNoPruning(P, 7);
+    int min = backtrackingNoPruning(P, 7);
     CHECK(min == 4);
   } 
 
   SUBCASE("Optimality Pruning") {
     std::cout << " [Optimality pruning]";
     int opt = 112345;
-    int min = backtrackOptimalityPruning(P, 7, opt);
+    int min = backtrackingOptimalityPruning(P, 7, opt);
     CHECK(min == 4);
   }
 
+  SUBCASE("Viability Pruning") {
+    std::cout << " [Viability pruning]";
+    int min = backtrackingViabilityPruning(P, 7);
+    CHECK(min == 4);
+  }
+  
   std::cout << "\n";
 }
