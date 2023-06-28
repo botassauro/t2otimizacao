@@ -14,5 +14,5 @@ int main() {
   g[3].push_back(1);
   g[3].push_back(2);
 
-  std::cout << countEvenCycles(g, 1);
+  //std::cout << countEvenCycles(g, 1);
 }

@@ -1,33 +1,35 @@
 #include <queue>
 #include <algorithm>
 #include <unordered_set>
+#include "bb.h"
+
+#define COUNTED 1
 
 #define NOT_PROCESSED 0
 #define IN_QUEUE 1
 #define PROCESSED 2
 
-std::vector<int> state(15);
-std::vector<int> ancestor(15);
-std::vector<int> distance(15);
-std::queue<int> q;
-std::vector<std::unordered_set<int>> edges_counted;
+void CountCycles::markCyclesEdgesAsCounted(int u, int v, int ancestor_u, int ancestor_v) {
+  edges_counted[u][v] = COUNTED;
+  edges_counted[v][u] = COUNTED;
 
-void markCyclesEdgesAsCounted(int u, int v, int ancestor_u, int ancestor_v) {
-  edges_counted.push_back(std::unordered_set{u, v});
   if ( ancestor_u != ancestor_v ) { 
-    edges_counted.push_back(std::unordered_set{ancestor_u, ancestor_v});
+    edges_counted[ancestor[u]][ancestor[v]] = COUNTED;
+    edges_counted[ancestor[v]][ancestor[u]] = COUNTED;
   }
 
   for ( ; u != ancestor_u; u = ancestor[u] ) {
-    edges_counted.push_back(std::unordered_set{u, ancestor_u});
+    edges_counted[u][ancestor[u]] = COUNTED;
+    edges_counted[ancestor[u]][u] = COUNTED;
   }
 
   for ( ; v != ancestor_v; v = ancestor[v] ) {
-    edges_counted.push_back(std::unordered_set{v, ancestor_v});
+    edges_counted[v][ancestor[v]] = COUNTED;
+    edges_counted[ancestor[v]][v] = COUNTED;
   }
 }
 
-void addVertexToQueue(int u, int v) {
+void CountCycles::addVertexToQueue(int u, int v) {
   ancestor[v] = u;
   distance[v] = distance[u] + 1;
   state[v] = IN_QUEUE;
@@ -42,7 +44,7 @@ bool areVerticesNeighbors(std::vector<int> x , int y) {
   return find(x.begin(), x.end(), y) != x.end();
 }
 
-bool hasCycleClosed(std::vector<std::vector<int>> g, int x, int y) {
+bool CountCycles::hasCycleClosed(int x, int y) {
   if ( areTheSameVertex(ancestor[x], ancestor[y]) ) {
     return true;
   }
@@ -62,11 +64,11 @@ bool hasCycleClosed(std::vector<std::vector<int>> g, int x, int y) {
   return false;
 }
 
-bool isEdgeInAnotherCycle(int x, int y) {
-  return find(edges_counted.begin(), edges_counted.end(), std::unordered_set<int>{x, y}) != edges_counted.end();
+bool CountCycles::isEdgeInAnotherCycle(int x, int y) {
+  return edges_counted[x][y] == COUNTED || edges_counted[y][x] == COUNTED;
 }
 
-int walkVertices(int& x, int& y) {
+int CountCycles::walkVertices(int& x, int& y) {
   int walk_amount = 0;
 
   int disX = distance[x];
@@ -85,10 +87,10 @@ int walkVertices(int& x, int& y) {
   return walk_amount;
 }
 
-int findCycle(std::vector<std::vector<int>> g, int& x, int& y) {
+int CountCycles::findCycle(int& x, int& y) {
   int vertices_walked = 0;
 
-  while ( hasCycleClosed(g, x, y) == false ) {
+  while ( hasCycleClosed(x, y) == false ) {
     if ( isEdgeInAnotherCycle(x, ancestor[x]) ) {
       return 0;
     }
@@ -103,8 +105,8 @@ int findCycle(std::vector<std::vector<int>> g, int& x, int& y) {
   return vertices_walked;
 }
 
-int walkToCommonAncestor(std::vector<std::vector<int>> g, int x, int y) {
-  int vertices_walked = findCycle(g, x, y);
+int CountCycles::walkToCommonAncestor(int x, int y) {
+  int vertices_walked = findCycle(x, y);
 
   if ( areVerticesNeighbors(g[x], ancestor[y]) ) {
     return isEdgeInAnotherCycle(x, ancestor[y]) ? 0 : vertices_walked + 1;
@@ -122,14 +124,14 @@ int walkToCommonAncestor(std::vector<std::vector<int>> g, int x, int y) {
   return vertices_walked + 1;
 }
 
-bool processCycle(std::vector<std::vector<int>> g, int u, int v) {
+bool CountCycles::processCycle(int u, int v) {
   int u_start = u;
   int v_start = v;
 
-  int vertices_until_common_ancestor = walkToCommonAncestor(g, u, v);
+  int vertices_until_common_ancestor = walkToCommonAncestor(u, v);
   int vertices_in_cycle = vertices_until_common_ancestor + 2;
 
-  if ( vertices_in_cycle % 2 == 1 ) {
+  if ( compFunc(vertices_in_cycle) ) {
     markCyclesEdgesAsCounted(u_start, v_start, ancestor[u], ancestor[v]);
     return true;
   }
@@ -137,14 +139,14 @@ bool processCycle(std::vector<std::vector<int>> g, int u, int v) {
   return false;
 }
 
-bool processNeighbor(std::vector<std::vector<int>> g, int u, int v) {
+bool CountCycles::processNeighbor(int u, int v) {
   switch ( state[v] ) {
     case NOT_PROCESSED:
       addVertexToQueue(u, v);
       return 0;
 
     case IN_QUEUE:
-      return processCycle(g, u, v);
+      return processCycle(u, v);
 
     case PROCESSED:
       return 0;
@@ -153,36 +155,48 @@ bool processNeighbor(std::vector<std::vector<int>> g, int u, int v) {
   return 0;
 }
 
-int vertexNewCyclesAmount(std::vector<std::vector<int>> g, int u) {
+int CountCycles::vertexNewCyclesAmount(int u) {
   int new_cycles = 0;
 
   for ( int v : g[u] ) {
-    new_cycles += processNeighbor(g, u, v) ? 1 : 0;
+    new_cycles += processNeighbor(u, v) ? 1 : 0;
   }
 
   return new_cycles;
 }
 
-void initVectors() {
-  fill(ancestor.begin(), ancestor.end(), 0);
-  fill(state.begin(), state.end(), NOT_PROCESSED);
-  fill(distance.begin(), distance.end(), 0);
-  edges_counted.clear();
-}
-
-int countEvenCycles(std::vector<std::vector<int>> g, int u) {
+int CountCycles::countCycles() {
   int cycles = 0;
-  initVectors();
-
-  q.push(u);
+  q.push(1);
 
   while ( !q.empty() ) {
-    u = q.front();
+    int u = q.front();
     q.pop();
-    cycles += vertexNewCyclesAmount(g, u);
+    cycles += vertexNewCyclesAmount(u);
     state[u] = PROCESSED;
   }
 
   return cycles;
 }
 
+bool isEven(int cnt) {
+  return cnt % 2 == 1;
+}
+
+int CountCycles::countEvenCycles() {
+  compFunc = isEven;
+  return countCycles();
+}
+
+bool isTriangle(int cnt) {
+  return cnt == 3;
+}
+
+int CountCycles::countTriangles() {
+  compFunc = isTriangle;
+  return countCycles();
+}
+
+CountCycles::CountCycles(std::vector<std::vector<int>> g) 
+  : g(g), ancestor(g.size()+1), state(g.size()+1), distance(g.size()+1), edges_counted(g.size()+1, std::vector<int>(g.size()+1)) {
+}
