@@ -1,5 +1,7 @@
 #include <vector>
 #include <iostream>
+#include <iomanip>
+#include <sys/time.h>
 
 #include "utils.h"
 #include "backtracking.h"
@@ -36,7 +38,7 @@ Problem readHeroes() {
   return P;
 }
 
-void printSolution(std::vector<int> S, int min, int nodes) {
+void printSolution(std::vector<int> S, int min, int nodes, double t) {
   std::cout << min << "\n";
   std::cout << 1;
   for ( size_t i = 2; i < S.size(); i++ ) {
@@ -48,5 +50,13 @@ void printSolution(std::vector<int> S, int min, int nodes) {
   std::cout << "\n";
 
   std::cerr << "Quantidades de nodos: " << nodes << "\n";
+  std::cerr << "Tempo: " << std::fixed << std::setprecision(4) << t << "\n";
 }
 
+double timestamp() {
+  struct timeval now;
+  gettimeofday(&now, 0);
+  long seconds = now.tv_sec;
+  long microseconds = now.tv_usec;
+  return seconds + microseconds * 1e-6;
+}

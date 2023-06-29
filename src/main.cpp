@@ -35,6 +35,9 @@ int main(int argc, char** argv) {
   }
 
   int nodes = 0;
+  double t = timestamp();
   int min = backtracking(countTriangles, desactivateOptimality, desactivateViability, P, S, nodes);
-  printSolution(S, min, nodes);
+  t = timestamp() - t;
+
+  printSolution(S, min, nodes, t);
 }
