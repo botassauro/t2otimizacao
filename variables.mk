@@ -3,7 +3,7 @@ PROJECT_SRC_DIR = src
 PROJECT_OBJ_DIR = obj
 
 PROJECT_TEST_DIR = test
-PROJECT_TARGET ?= bb
+PROJECT_TARGET ?= separa
 
 PROJECT_CC = g++
 PROJECT_CFLAGS = -g -Wall -Wextra

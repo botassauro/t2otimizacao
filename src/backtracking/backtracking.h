@@ -12,8 +12,8 @@ struct Problem {
   std::vector<std::vector<int>> conflicts;
 };
 
-int backtrackingNoPruning(Problem P, int h);
-int backtrackingViabilityPruning(Problem P, int h);
-int backtrackingOptimalityPruning(Problem P, int h, int& opt);
-int backtrackingViabilityAndOptimalityPruning(Problem P, int h, int& opt);
+int backtrackingNoPruning(Problem P, int h, std::vector<int>& S);
+int backtrackingViabilityPruning(Problem P, int h, std::vector<int>& S);
+int backtrackingOptimalityPruning(Problem P, int h, int& opt, std::vector<int>& S);
+int backtrackingViabilityAndOptimalityPruning(Problem P, int h, int& opt, std::vector<int>& S);
 #endif

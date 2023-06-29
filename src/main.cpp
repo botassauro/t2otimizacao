@@ -1,18 +1,16 @@
 #include <vector>
-#include <iostream>
 
+#include "utils.h"
+#include "backtracking.h"
 #include "limiting-function.h"
 
 int main() {
-  std::vector<std::vector<int>> g(4);
-  g[1].push_back(2);
-  g[1].push_back(3);
+  Problem P;
+  P = readHeroes();
 
-  g[2].push_back(1);
-  g[2].push_back(3);
+  int opt = 112345;
+  std::vector<int> S(P.number_of_heroes+1);
+  int min = backtrackingViabilityAndOptimalityPruning(P, P.number_of_heroes, opt, S);
 
-  g[3].push_back(1);
-  g[3].push_back(2);
-
-  //std::cout << countEvenCycles(g, 1);
+  printSolution(S, min);
 }

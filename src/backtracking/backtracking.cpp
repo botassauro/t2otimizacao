@@ -39,24 +39,25 @@ int conflictsInserted(Problem P, int h) {
   return cnt;
 }
 
-int backtrackingNoPruning(Problem P, int h) {
+int backtrackingNoPruning(Problem P, int h, std::vector<int>& S) {
   if ( h == 0 ) {
+    S = P.g;
     return isViable(P) ? 0 : oo;
   }
 
   int min = oo;
-  int group_i;
 
+  std::vector<int> sol_aux;
   for (int i = 0; i <= 1; i++ ) {
     P.g[h] = i;
-    int min_group = backtrackingNoPruning(P, h-1) + conflictsInserted(P, h);
+    int min_group = backtrackingNoPruning(P, h-1, sol_aux) + conflictsInserted(P, h);
+
     if ( min_group <= min ) {
-      group_i = i;
+      S = sol_aux;
       min = min_group;
     }
   }
 
-  P.g[h] = group_i;
   return min;
 }
 
@@ -71,8 +72,9 @@ std::vector<std::vector<int>> removeConflicts(std::vector<std::vector<int>> conf
   return conflicts;
 }
 
-int backtrackingOptimalityPruning(Problem P, int h, int& opt) {
+int backtrackingOptimalityPruning(Problem P, int h, int& opt, std::vector<int>& S) {
   if ( h == 0 ) {
+    S = P.g;
     return isViable(P) ? 0 : oo;
   }
   
@@ -80,18 +82,21 @@ int backtrackingOptimalityPruning(Problem P, int h, int& opt) {
     return oo;
   }
 
-  std::vector<std::vector<int>> original_conflicts = P.conflicts;
-
   int min = oo;
+  std::vector<std::vector<int>> original_conflicts = P.conflicts;
+  std::vector<int> sol_aux;
 
   for ( int i = 0; i <= 1; i++ ) {
     P.g[h] = i;
     int conflicts_inserted = conflictsInserted(P, h);
     P.conflicts_cnt += conflicts_inserted;
     P.conflicts = removeConflicts(P.conflicts, h);
-    int min_group = backtrackingOptimalityPruning(P, h-1, opt) + conflicts_inserted;
+    int min_group = backtrackingOptimalityPruning(P, h-1, opt, sol_aux) + conflicts_inserted;
 
-    min = std::min(min, min_group);
+    if ( min_group <= min ) {
+      S = sol_aux;
+      min = min_group;
+    }
 
     P.conflicts_cnt -= conflicts_inserted;
     P.conflicts = original_conflicts;
@@ -116,26 +121,33 @@ bool wouldBeViable(Problem P, int h, int h_group) {
   return true;
 }
   
-int backtrackingViabilityPruning(Problem P, int h) {
+int backtrackingViabilityPruning(Problem P, int h, std::vector<int>& S) {
   if ( h == 0 ) {
+    S = P.g;
     return isViable(P) ? 0 : oo;
   }
   
   int min = oo;
+  std::vector<int> sol_aux;
 
   for ( int i = 0; i <= 1; i++ ) {
     if ( wouldBeViable(P, h, i) ) {
       P.g[h] = i;
-      int min_group = backtrackingViabilityPruning(P, h-1) + conflictsInserted(P, h);
-      min = std::min(min, min_group);
+      int min_group = backtrackingViabilityPruning(P, h-1, sol_aux) + conflictsInserted(P, h);
+
+      if ( min_group <= min ) {
+        S = sol_aux;
+        min = min_group;
+      }
     }
   }
 
   return min;
 }
 
-int backtrackingViabilityAndOptimalityPruning(Problem P, int h, int& opt) {
+int backtrackingViabilityAndOptimalityPruning(Problem P, int h, int& opt, std::vector<int>& S) {
   if ( h == 0 ) {
+    S = P.g;
     return isViable(P) ? 0 : oo;
   }
   
@@ -146,6 +158,7 @@ int backtrackingViabilityAndOptimalityPruning(Problem P, int h, int& opt) {
   std::vector<std::vector<int>> original_conflicts = P.conflicts;
 
   int min = oo;
+  std::vector<int> sol_aux;
 
   for ( int i = 0; i <= 1; i++ ) {
     if ( wouldBeViable(P, h, i) ) {
@@ -153,9 +166,12 @@ int backtrackingViabilityAndOptimalityPruning(Problem P, int h, int& opt) {
       int conflicts_inserted = conflictsInserted(P, h);
       P.conflicts_cnt += conflicts_inserted;
       P.conflicts = removeConflicts(P.conflicts, h);
-      int min_group = backtrackingOptimalityPruning(P, h-1, opt) + conflicts_inserted;
+      int min_group = backtrackingOptimalityPruning(P, h-1, opt, sol_aux) + conflicts_inserted;
 
-      min = std::min(min, min_group);
+      if ( min_group <= min ) {
+        S = sol_aux;
+        min = min_group;
+      }
 
       P.conflicts_cnt -= conflicts_inserted;
       P.conflicts = original_conflicts;
