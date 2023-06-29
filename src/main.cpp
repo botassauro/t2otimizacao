@@ -34,6 +34,7 @@ int main(int argc, char** argv) {
     }
   }
 
-  int min = backtracking(countTriangles, desactivateOptimality, desactivateViability, P, S);
-  printSolution(S, min);
+  int nodes = 0;
+  int min = backtracking(countTriangles, desactivateOptimality, desactivateViability, P, S, nodes);
+  printSolution(S, min, nodes);
 }

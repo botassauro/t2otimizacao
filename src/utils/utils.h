@@ -5,6 +5,6 @@
 #include "backtracking.h"
 
 Problem readHeroes();
-void printSolution(std::vector<int> S, int min);
+void printSolution(std::vector<int> S, int min, int nodes);
 
 #endif

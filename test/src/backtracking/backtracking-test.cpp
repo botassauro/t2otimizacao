@@ -38,31 +38,32 @@ TEST_CASE("Backtracking case 1") {
     .conflicts = conflicts,
   };
 
+  int nodes = 0;
   std::vector<int> S(8);
 
   SUBCASE("No pruning") {
     std::cout << " [No pruning]";
-    int min = backtrackingNoPruning(P, 7, S);
+    int min = backtrackingNoPruning(P, 7, S, nodes);
     CHECK(min == 4);
   } 
 
   SUBCASE("Viability Pruning") {
     std::cout << " [Viability pruning]";
-    int min = backtrackingViabilityPruning(P, 7, S);
+    int min = backtrackingViabilityPruning(P, 7, S, nodes);
     CHECK(min == 4);
   }
   
   SUBCASE("Optimality Pruning") {
     std::cout << " [Optimality pruning]";
     int opt = 112345;
-    int min = backtrackingOptimalityPruning(P, 7, opt, S, false);
+    int min = backtrackingOptimalityPruning(P, 7, opt, S, false, nodes);
     CHECK(min == 4);
   }
 
   SUBCASE("Viability and Optimality Pruning") {
     std::cout << " [Viability and optimality pruning]";
     int opt = 112345;
-    int min = backtrackingViabilityAndOptimalityPruning(P, 7, opt, S, false);
+    int min = backtrackingViabilityAndOptimalityPruning(P, 7, opt, S, false, nodes);
     CHECK(min == 4);
   }
   std::cout << "\n";
@@ -89,6 +90,7 @@ TEST_CASE("Backtracking case 2") {
     {3},
   };
 
+  int nodes = 0;
   std::vector<int> g(6, -1);
 
   Problem P { 
@@ -104,27 +106,27 @@ TEST_CASE("Backtracking case 2") {
 
   SUBCASE("No pruning") {
     std::cout << " [No pruning]";
-    int min = backtrackingNoPruning(P, 5, S);
+    int min = backtrackingNoPruning(P, 5, S, nodes);
     CHECK(min == 1);
   } 
 
   SUBCASE("Viability Pruning") {
     std::cout << " [Viability pruning]";
-    int min = backtrackingViabilityPruning(P, 5, S);
+    int min = backtrackingViabilityPruning(P, 5, S, nodes);
     CHECK(min == 1);
   }
   
   SUBCASE("Optimality Pruning") {
     std::cout << " [Optimality pruning]";
     int opt = 112345;
-    int min = backtrackingOptimalityPruning(P, 5, opt, S, false);
+    int min = backtrackingOptimalityPruning(P, 5, opt, S, false, nodes);
     CHECK(min == 1);
   }
 
   SUBCASE("Viability and Optimality Pruning") {
     std::cout << " [Viability and optimality pruning]";
     int opt = 112345;
-    int min = backtrackingViabilityAndOptimalityPruning(P, 5, opt, S, false);
+    int min = backtrackingViabilityAndOptimalityPruning(P, 5, opt, S, false, nodes);
     CHECK(min == 1);
   }
 
@@ -167,31 +169,32 @@ TEST_CASE("Backtracking case 3") {
     .conflicts = conflicts,
   };
 
+  int nodes = 0;
   std::vector<int> S(8);
 
   SUBCASE("No pruning") {
     std::cout << " [No pruning]";
-    int min = backtrackingNoPruning(P, 7, S);
+    int min = backtrackingNoPruning(P, 7, S, nodes);
     CHECK(min == 1);
   } 
 
   SUBCASE("Viability Pruning") {
     std::cout << " [Viability pruning]";
-    int min = backtrackingViabilityPruning(P, 7, S);
+    int min = backtrackingViabilityPruning(P, 7, S, nodes);
     CHECK(min == 1);
   }
   
   SUBCASE("Optimality Pruning") {
     std::cout << " [Optimality pruning]";
     int opt = 112345;
-    int min = backtrackingOptimalityPruning(P, 7, opt, S, false);
+    int min = backtrackingOptimalityPruning(P, 7, opt, S, false, nodes);
     CHECK(min == 1);
   }
 
   SUBCASE("Viability and Optimality Pruning") {
     std::cout << " [Viability and optimality pruning]";
     int opt = 112345;
-    int min = backtrackingViabilityAndOptimalityPruning(P, 7, opt, S, false);
+    int min = backtrackingViabilityAndOptimalityPruning(P, 7, opt, S, false, nodes);
     CHECK(min == 1);
   }
 

@@ -29,13 +29,14 @@ Problem readHeroes() {
   int k, m;
   std::cin >> k >> m;
 
+  P.conflicts_cnt = 0;
   P.conflicts = readGraph(n+1, k);
   P.affinities = readGraph(n+1, m);
   
   return P;
 }
 
-void printSolution(std::vector<int> S, int min) {
+void printSolution(std::vector<int> S, int min, int nodes) {
   std::cout << min << "\n";
   std::cout << 1;
   for ( size_t i = 2; i < S.size(); i++ ) {
@@ -45,5 +46,7 @@ void printSolution(std::vector<int> S, int min) {
   }
 
   std::cout << "\n";
+
+  std::cerr << "Quantidades de nodos: " << nodes << "\n";
 }
 

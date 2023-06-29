@@ -1,5 +1,6 @@
 #include <queue>
 #include <algorithm>
+#include <iostream>
 #include "limiting-function.h"
 
 #define COUNTED 1
@@ -205,6 +206,7 @@ int limitingFunction(std::vector<std::vector<int>> conflicts, int conflicts_choo
   if ( countTriangles ) {
     return cc.countTriangles() + conflicts_choosen;
   }
+    
   return cc.countEvenCycles() + conflicts_choosen;
 }
 
