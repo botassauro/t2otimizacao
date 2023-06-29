@@ -34,6 +34,6 @@ public:
   CountCycles(std::vector<std::vector<int>> g);
 };
 
-int limitingFunction(std::vector<std::vector<int>> conflicts, int conflicts_choosen);
+int limitingFunction(std::vector<std::vector<int>> conflicts, int conflicts_choosen, bool countTriangles);
 
 #endif

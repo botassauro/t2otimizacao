@@ -1,16 +1,39 @@
 #include <vector>
+#include <unistd.h>
 
 #include "utils.h"
 #include "backtracking.h"
 #include "limiting-function.h"
 
-int main() {
+int main(int argc, char** argv) {
   Problem P;
   P = readHeroes();
-
-  int opt = 112345;
   std::vector<int> S(P.number_of_heroes+1);
-  int min = backtrackingViabilityAndOptimalityPruning(P, P.number_of_heroes, opt, S);
 
+  int op;
+  bool countTriangles = false;
+  bool desactivateOptimality = false;
+  bool desactivateViability = false;
+
+  while( (op = getopt(argc, argv, "foa")) != -1 ) {
+    switch (op) {
+      case 'a':
+        countTriangles = true;
+        break;
+
+      case 'o':
+        desactivateOptimality = true;
+        break;
+
+      case 'f':
+        desactivateViability = true;
+        break;
+
+      default: 
+        break;
+    }
+  }
+
+  int min = backtracking(countTriangles, desactivateOptimality, desactivateViability, P, S);
   printSolution(S, min);
 }
