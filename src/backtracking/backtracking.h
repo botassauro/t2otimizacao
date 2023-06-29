@@ -13,6 +13,7 @@ struct Problem {
 };
 
 int backtrackingNoPruning(Problem P, int h);
-int backtrackingOptimalityPruning(Problem P, int h, int& opt);
 int backtrackingViabilityPruning(Problem P, int h);
+int backtrackingOptimalityPruning(Problem P, int h, int& opt);
+int backtrackingViabilityAndOptimalityPruning(Problem P, int h, int& opt);
 #endif

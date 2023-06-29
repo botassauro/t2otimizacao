@@ -44,6 +44,12 @@ TEST_CASE("Backtracking") {
     CHECK(min == 4);
   } 
 
+  SUBCASE("Viability Pruning") {
+    std::cout << " [Viability pruning]";
+    int min = backtrackingViabilityPruning(P, 7);
+    CHECK(min == 4);
+  }
+  
   SUBCASE("Optimality Pruning") {
     std::cout << " [Optimality pruning]";
     int opt = 112345;
@@ -51,11 +57,11 @@ TEST_CASE("Backtracking") {
     CHECK(min == 4);
   }
 
-  SUBCASE("Viability Pruning") {
-    std::cout << " [Viability pruning]";
-    int min = backtrackingViabilityPruning(P, 7);
+  SUBCASE("Viability and Optimality Pruning") {
+    std::cout << " [Viability and optimality pruning]";
+    int opt = 112345;
+    int min = backtrackingViabilityAndOptimalityPruning(P, 7, opt);
     CHECK(min == 4);
   }
-  
   std::cout << "\n";
 }

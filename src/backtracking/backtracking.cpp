@@ -133,3 +133,36 @@ int backtrackingViabilityPruning(Problem P, int h) {
 
   return min;
 }
+
+int backtrackingViabilityAndOptimalityPruning(Problem P, int h, int& opt) {
+  if ( h == 0 ) {
+    return isViable(P) ? 0 : oo;
+  }
+  
+  if ( limitingFunction(P.conflicts, P.conflicts_cnt) >= P.opt ) {
+    return oo;
+  }
+
+  std::vector<std::vector<int>> original_conflicts = P.conflicts;
+
+  int min = oo;
+
+  for ( int i = 0; i <= 1; i++ ) {
+    if ( wouldBeViable(P, h, i) ) {
+      P.g[h] = i;
+      int conflicts_inserted = conflictsInserted(P, h);
+      P.conflicts_cnt += conflicts_inserted;
+      P.conflicts = removeConflicts(P.conflicts, h);
+      int min_group = backtrackingOptimalityPruning(P, h-1, opt) + conflicts_inserted;
+
+      min = std::min(min, min_group);
+
+      P.conflicts_cnt -= conflicts_inserted;
+      P.conflicts = original_conflicts;
+    }
+  }
+
+  opt = std::min(opt, min);
+
+  return min;
+}

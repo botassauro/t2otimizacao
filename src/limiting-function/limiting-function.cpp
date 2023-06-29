@@ -1,6 +1,5 @@
 #include <queue>
 #include <algorithm>
-#include <unordered_set>
 #include "limiting-function.h"
 
 #define COUNTED 1
