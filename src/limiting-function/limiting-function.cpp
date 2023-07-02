@@ -73,7 +73,7 @@ int CountCycles::walkVertices(int& x, int& y) {
 
   int disX = distance[x];
   int disY = distance[y];
-  std::cout << disX << " " << disY << "\n";
+  //std::cout << disX << " " << disY << "\n";
 
   if ( disX <= disY ) {
     y = ancestor[y];
@@ -206,6 +206,7 @@ int CountCycles::countCycles() {
 }
 
 bool isEven(int cnt) {
+  
   return cnt % 2 == 1;
 }
 
@@ -215,6 +216,7 @@ int CountCycles::countEvenCycles() {
 }
 
 bool isTriangle(int cnt) {
+  
   return cnt == 3;
 }
 

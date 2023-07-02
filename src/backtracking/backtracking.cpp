@@ -90,7 +90,7 @@ int backtrackingOptimalityPruning(Problem P, int h, int& opt, std::vector<int>& 
     return oo;
   }
   
-  if ( limitingFunction(P.conflicts, P.conflicts_cnt, countTriangles) > opt ) {
+  if ( limitingFunction(P.conflicts, P.conflicts_cnt, countTriangles) >= opt ) {
     return oo;
   }
 
@@ -170,7 +170,7 @@ int backtrackingViabilityAndOptimalityPruning(Problem P, int h, int& opt, std::v
     return oo;
   }
   
-  if ( limitingFunction(P.conflicts, P.conflicts_cnt, countTriangles) > opt ) {
+  if ( limitingFunction(P.conflicts, P.conflicts_cnt, countTriangles) >= opt ) {
     return oo;
   }
 
