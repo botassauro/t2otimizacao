@@ -1,5 +1,6 @@
 #include <vector>
 #include <iostream>
+#include <algorithm>
 #include "limiting-function.h"
 #include "backtracking.h"
 
@@ -64,10 +65,13 @@ int backtrackingNoPruning(Problem P, int h, std::vector<int>& S, int&nodes) {
 }
 
 std::vector<std::vector<int>> removeConflicts(std::vector<std::vector<int>> conflicts, int h) {
-  for ( int u : conflicts[h] ) {
+  for ( int i = 0; i < conflicts[h].size(); i++ ) {
+    int u = conflicts[h][i];
     if ( u > h ) {
-      conflicts[h].erase(conflicts[h].begin() + u);             
-      conflicts[u].erase(conflicts[u].begin() + h);             
+      auto it_h = std::find(conflicts[u].begin(), conflicts[u].end(), h);
+      conflicts[u].erase(it_h);
+      auto it_u = std::find(conflicts[h].begin(), conflicts[h].end(), u);
+      conflicts[h].erase(it_u);
     }
   }
 
