@@ -65,7 +65,7 @@ int backtrackingNoPruning(Problem P, int h, std::vector<int>& S, int&nodes) {
 }
 
 std::vector<std::vector<int>> removeConflicts(std::vector<std::vector<int>> conflicts, int h) {
-  for ( int i = 0; i < conflicts[h].size(); i++ ) {
+  for ( size_t i = 0; i < conflicts[h].size(); i++ ) {
     int u = conflicts[h][i];
     if ( u > h ) {
       auto it_h = std::find(conflicts[u].begin(), conflicts[u].end(), h);
@@ -178,7 +178,7 @@ int backtrackingViabilityAndOptimalityPruning(Problem P, int h, int& opt, std::v
       int conflicts_inserted = conflictsInserted(P, h);
       P.conflicts_cnt += conflicts_inserted;
       P.conflicts = removeConflicts(P.conflicts, h);
-      int min_group = backtrackingOptimalityPruning(P, h-1, opt, sol_aux, countTriangles, nodes) + conflicts_inserted;
+      int min_group = backtrackingViabilityAndOptimalityPruning(P, h-1, opt, sol_aux, countTriangles, nodes) + conflicts_inserted;
 
       if ( min_group <= min ) {
         S = sol_aux;
