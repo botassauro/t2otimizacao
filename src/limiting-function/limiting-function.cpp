@@ -73,14 +73,15 @@ int CountCycles::walkVertices(int& x, int& y) {
 
   int disX = distance[x];
   int disY = distance[y];
+  std::cout << disX << " " << disY << "\n";
 
   if ( disX <= disY ) {
-    x = ancestor[x];
+    y = ancestor[y];
     walk_amount++;
   }
 
   if ( disY <= disX ) {
-    y = ancestor[y];
+    x = ancestor[x];
     walk_amount++;
   }
 
@@ -165,16 +166,41 @@ int CountCycles::vertexNewCyclesAmount(int u) {
   return new_cycles;
 }
 
+int CountCycles::findFirstNeighbor() {
+  for ( size_t u = 1; u < g.size(); u++ ) {
+    if ( state[u] == NOT_PROCESSED)
+      return u;
+  }
+
+  return 1;
+}
+
+bool CountCycles::hasVisitedAllVertices() {
+  for ( size_t u = 1; u < g.size(); u++ ) {
+    for ( int v : g[u] ) {
+      if ( state[v] != PROCESSED )
+        return false;
+    }
+  }
+
+  return true;
+}
+
 int CountCycles::countCycles() {
   int cycles = 0;
-  q.push(1);
 
-  while ( !q.empty() ) {
-    int u = q.front();
-    q.pop();
-    cycles += vertexNewCyclesAmount(u);
-    state[u] = PROCESSED;
-  }
+  do {
+    int first = findFirstNeighbor();
+    q.push(first);
+
+    while ( !q.empty() ) {
+      int u = q.front();
+      q.pop();
+      cycles += vertexNewCyclesAmount(u);
+      state[u] = PROCESSED;
+    }
+
+  } while ( hasVisitedAllVertices() == false );
 
   return cycles;
 }
@@ -207,6 +233,7 @@ int limitingFunction(std::vector<std::vector<int>> conflicts, int conflicts_choo
     return cc.countTriangles() + conflicts_choosen;
   }
     
-  return cc.countEvenCycles() + conflicts_choosen;
+  int cnt = cc.countEvenCycles() + conflicts_choosen;
+  return cnt;
 }
 

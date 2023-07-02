@@ -26,6 +26,8 @@ private:
   bool processCycle(int u, int v);
   bool hasCycleClosed(int x, int y);
   bool isEdgeInAnotherCycle(int x, int y);
+  int findFirstNeighbor();
+  bool hasVisitedAllVertices();
   int countCycles();
 
 public:
