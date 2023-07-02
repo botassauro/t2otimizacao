@@ -134,7 +134,6 @@ bool wouldBeViable(Problem P, int h, int h_group) {
   
 int backtrackingViabilityPruning(Problem P, int h, std::vector<int>& S, int& nodes) {
   nodes++;
-  std::cout << nodes << "\n";
 
   if ( h == 0 ) {
     S = P.g;
@@ -161,7 +160,6 @@ int backtrackingViabilityPruning(Problem P, int h, std::vector<int>& S, int& nod
 
 int backtrackingViabilityAndOptimalityPruning(Problem P, int h, int& opt, std::vector<int>& S, bool countTriangles, int& nodes) {
   nodes++;
-  std::cout << nodes << "\n";
 
   if ( h == 0 ) {
     S = P.g;
