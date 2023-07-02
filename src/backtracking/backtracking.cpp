@@ -83,12 +83,17 @@ int backtrackingOptimalityPruning(Problem P, int h, int& opt, std::vector<int>& 
 
   if ( h == 0 ) {
     S = P.g;
-    return isViable(P) ? 0 : oo;
+    if ( isViable(P) ) {
+      opt = std::min(opt, P.conflicts_cnt);
+      return 0;
+    }
+    return oo;
   }
   
   if ( limitingFunction(P.conflicts, P.conflicts_cnt, countTriangles) > opt ) {
     return oo;
   }
+
 
   int min = oo;
   std::vector<std::vector<int>> original_conflicts = P.conflicts;
@@ -109,8 +114,6 @@ int backtrackingOptimalityPruning(Problem P, int h, int& opt, std::vector<int>& 
     P.conflicts_cnt -= conflicts_inserted;
     P.conflicts = original_conflicts;
   }
-
-  opt = std::min(opt, min);
 
   return min;
 }
@@ -160,7 +163,11 @@ int backtrackingViabilityAndOptimalityPruning(Problem P, int h, int& opt, std::v
 
   if ( h == 0 ) {
     S = P.g;
-    return isViable(P) ? 0 : oo;
+    if ( isViable(P) ) {
+      opt = std::min(opt, P.conflicts_cnt);
+      return 0;
+    }
+    return oo;
   }
   
   if ( limitingFunction(P.conflicts, P.conflicts_cnt, countTriangles) > opt ) {
@@ -189,8 +196,6 @@ int backtrackingViabilityAndOptimalityPruning(Problem P, int h, int& opt, std::v
       P.conflicts = original_conflicts;
     }
   }
-
-  opt = std::min(opt, min);
 
   return min;
 }
